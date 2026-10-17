@@ -839,4 +839,156 @@ body {
     40%, 60% { left: 150%; }
 }
 
+.main-container {
+    display: flex;
+    gap: 80px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
 
+/* --- Контейнер группы --- */
+.hex-group {
+    position: relative;
+    /* Размеры контейнера под сетку */
+    width: 560px;
+    height: 600px;
+}
+
+/* --- Обертка (отвечает за позицию и серую обводку) --- */
+.hex-wrapper {
+    position: absolute;
+    width: 180px;
+    height: 208px;
+    
+    /* Серый фон выступает в роли обводки */
+    background-color: rgba(255, 255, 255, 0.15);
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    
+    /* Анимация появления */
+    opacity: 0;
+    transform: scale(0.9);
+    animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    transition: filter 0.3s ease;
+    cursor: pointer;
+    z-index: 1;
+}
+
+/* --- Внутренний шестиугольник (цвет и зазор) --- */
+.hex {
+    /* Отступы создают зазор между фигурами и толщину обводки */
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    bottom: 2px;
+    
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 15px 25px;
+    box-sizing: border-box;
+    z-index: 2;
+}
+
+/* Эффект при наведении (только свечение, без изменения размера) */
+.hex-wrapper:hover {
+    filter: brightness(1.2) drop-shadow(0 0 15px rgba(255,255,255,0.2));
+    z-index: 10;
+}
+
+/* --- Типографика --- */
+.hex h2 {
+    font-size: 22px;
+    margin: 0 0 5px 0;
+    font-weight: 800;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
+    line-height: 1.1;
+}
+
+.hex p {
+    font-size: 10.5px;
+    line-height: 1.25;
+    margin: 0;
+    font-weight: 500;
+    color: #f0f0f0;
+}
+
+/* --- Цвета --- */
+.c-brown { background-color: #8B5E1E; }
+.c-dark-blue { background-color: #2A3B63; }
+.c-purple { background-color: #7A4763; }
+.c-red { background-color: #9E5252; }
+.c-teal { background-color: #2F6F6F; }
+.c-blue { background-color: #597E9E; }
+.c-gray { background-color: #3F3F3F; }
+
+.c-gold { background-color: #7A5720; }
+.c-navy { background-color: #26355A; }
+.c-magenta { background-color: #7A4860; }
+.c-rust { background-color: #8F4C4C; }
+.c-dark-teal { background-color: #2A6666; }
+.c-light-blue { background-color: #6389AA; }
+.c-black { background-color: #1A1A1A; }
+
+
+/* ====================================================
+   ТОЧНОЕ ПОЗИЦИОНИРОВАНИЕ (Строго по скриншоту)
+   ==================================================== */
+
+/* --- ЛЕВАЯ ГРУППА --- */
+.L-brown  { top: 85px;  left: 0px; } 
+.L-blue   { top: 5px;   left: 185px; z-index: 2; } /* Выдвинут вверх */
+.L-purple { top: 85px;  left: 370px; } 
+
+.L-red    { top: 245px; left: 0px; } 
+.L-teal   { top: 165px; left: 185px; } 
+.L-lightblue { top: 245px; left: 370px; } 
+
+.L-gray   { top: 325px; left: 185px; } 
+
+
+/* --- ПРАВАЯ ГРУППА --- */
+.R-gold   { top: 85px;  left: 0px; } 
+.R-navy   { top: 5px;   left: 185px; z-index: 2; } 
+.R-magenta{ top: 85px;  left: 370px; } 
+
+.R-rust   { top: 245px; left: 0px; } 
+.R-teal   { top: 165px; left: 185px; } 
+.R-lightblue { top: 245px; left: 370px; } 
+
+.R-black  { top: 325px; left: 185px; } 
+
+
+/* --- Анимация --- */
+@keyframes popIn {
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Каскадное появление */
+.L-blue, .R-navy { animation-delay: 0.1s; }
+.L-brown, .R-gold { animation-delay: 0.2s; }
+.L-purple, .R-magenta { animation-delay: 0.3s; }
+.L-red, .R-rust { animation-delay: 0.4s; }
+.L-teal, .R-teal { animation-delay: 0.5s; }
+.L-lightblue, .R-lightblue { animation-delay: 0.6s; }
+.L-gray, .R-black { animation-delay: 0.7s; }
+
+
+/* --- Адаптивность --- */
+@media (max-width: 1250px) {
+    .main-container { 
+        flex-direction: column; 
+        gap: 80px; 
+    }
+}
+
+@media (max-width: 650px) {
+    .main-container { 
+        transform: scale(0.6); 
+        margin: -150px 0; 
+    }
+}
