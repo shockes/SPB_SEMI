@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Subscribe to a Service Plan</title>
+
+  <link rel="stylesheet" href="pod.css">
+  <link rel="stylesheet" href="oplata.css">
+</head>
+<body>
+  <div class="grid-bg"></div>
+
+  <main class="form">
+    <h1>Subscribe to a Service Plan</h1>
+
+    <form id="serviceForm" novalidate>
+      <div class="field">
+        <label for="company">Company Name*</label>
+        <input id="company" name="company" placeholder="Full company name" required>
+      </div>
+
+      <div class="field">
+        <label for="representative">Company Representative*</label>
+        <input
+          id="representative"
+          name="representative"
+          placeholder="First and last name"
+          required
+        >
+      </div>
+
+      <div class="field">
+        <label for="email">Email Address*</label>
+        <input
+          id="email"
+          name="email"
+          type="email"
+          placeholder="example@mail.com"
+          required
+        >
+      </div>
+
+      <div class="field">
+        <label for="phone">Contact Phone Number*</label>
+        <input
+          id="phone"
+          name="phone"
+          type="tel"
+          placeholder="+1 (___) ___-____"
+          required
+        >
+      </div>
+
+      <div class="field">
+        <label for="country">
+          <img class="field-icon" src="image/planet.png" alt="">
+          Country*
+        </label>
+        <select id="country" name="country" required>
+          <option value="">Select a country</option>
+          <option>United States</option>
+          <option>Canada</option>
+          <option>United Kingdom</option>
+          <option>Australia</option>
+          <option>Germany</option>
+          <option>France</option>
+          <option>Japan</option>
+          <option>China</option>
+          <option>Turkey</option>
+          <option>Other</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="industry">
+          <img class="field-icon" src="image/tree.png" alt="">
+          Industry*
+        </label>
+        <select id="industry" name="industry" required>
+          <option value="">Select an industry</option>
+          <option>Information Technology</option>
+          <option>Finance and Insurance</option>
+          <option>Retail</option>
+          <option>Manufacturing</option>
+          <option>Construction</option>
+          <option>Education</option>
+          <option>Healthcare</option>
+          <option>Other</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="paymentDate">
+          <img class="field-icon" src="image/color.png" alt="">
+          Payment Date*
+        </label>
+        <input id="paymentDate" name="paymentDate" type="date" required>
+      </div>
+
+      <div class="field">
+        <label for="currency">
+          <img class="field-icon" src="image/money.png" alt="">
+          Payment Currency*
+        </label>
+        <select id="currency" name="currency" required>
+          <option value="">Select a currency</option>
+          <option value="USD">US Dollar (USD)</option>
+          <option value="EUR">Euro (EUR)</option>
+          <option value="GBP">British Pound (GBP)</option>
+          <option value="CAD">Canadian Dollar (CAD)</option>
+          <option value="AUD">Australian Dollar (AUD)</option>
+          <option value="JPY">Japanese Yen (JPY)</option>
+          <option value="CNY">Chinese Yuan (CNY)</option>
+          <option value="TRY">Turkish Lira (TRY)</option>
+        </select>
+      </div>
+
+      <div class="payment-title">Pay for your plan with a corporate card</div>
+
+      <div class="actions">
+        <button type="submit">Pay Now</button>
+      </div>
+
+      <div id="message" class="message" role="status"></div>
+    </form>
+  </main>
+
+  <!-- Модальное окно оплаты -->
+  <div class="payment-modal" id="paymentModal" aria-hidden="true">
+    <div class="payment-modal__backdrop" data-close-payment></div>
+
+    <section
+      class="payment-modal__dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="paymentTitle"
+    >
+      <button
+        class="payment-modal__close"
+        type="button"
+        aria-label="Закрыть"
+        data-close-payment
+      >&times;</button>
+
+      <h2 id="paymentTitle">Card details</h2>
+
+      <div class="wrapper" id="app">
+        <div class="card-form">
+          <div class="card-list">
+            <div class="card-item" :class="{ '-active': isCardFlipped }">
+              <div class="card-item__side -front">
+                <div
+                  class="card-item__focus"
+                  :class="{ '-active': focusElementStyle }"
+                  :style="focusElementStyle"
+                  ref="focusElement"
+                ></div>
+
+                <div class="card-item__cover">
+                  <img :src="cardBackgroundUrl" class="card-item__bg" alt="Фон карты">
+                </div>
+
+                <div class="card-item__wrapper">
+                  <div class="card-item__top">
+                    <img
+                      src="https://raw.githubusercontent.com/muhammederdem/credit-card-form/master/src/assets/images/chip.png"
+                      class="card-item__chip"
+                      alt="Чип"
+                    >
+
+                    <div class="card-item__type">
+                      <transition name="slide-fade-up">
+                        <img
+                          v-if="getCardType"
+                          :src="cardTypeUrl"
+                          :key="getCardType"
+                          class="card-item__typeImg"
+                          alt="Тип карты"
+                        >
+                      </transition>
+                    </div>
+                  </div>
+
+                  <label for="cardNumber" class="card-item__number" ref="cardNumber">
+                    <template v-if="getCardType === 'amex'">
+                      <span v-for="(character, index) in amexCardMask" :key="index">
+                        <transition name="slide-fade-up">
+                          <div
+                            v-if="index > 4 && index < 14 && cardNumber.length > index && character.trim() !== ''"
+                            class="card-item__numberItem"
+                          >*</div>
+                          <div
+                            v-else-if="cardNumber.length > index"
+                            class="card-item__numberItem"
+                            :class="{ '-active': character.trim() === '' }"
+                            :key="'entered-' + index"
+                          >{{ cardNumber[index] }}</div>
+                          <div
+                            v-else
+                            class="card-item__numberItem"
+                            :class="{ '-active': character.trim() === '' }"
+                            :key="'placeholder-' + index"
+                          >{{ character }}</div>
+                        </transition>
+                      </span>
+                    </template>
+
+                    <template v-else>
+                      <span v-for="(character, index) in otherCardMask" :key="index">
+                        <transition name="slide-fade-up">
+                          <div
+                            v-if="index > 4 && index < 15 && cardNumber.length > index && character.trim() !== ''"
+                            class="card-item__numberItem"
+                          >*</div>
+                          <div
+                            v-else-if="cardNumber.length > index"
+                            class="card-item__numberItem"
+                            :class="{ '-active': character.trim() === '' }"
+                            :key="'entered-' + index"
+                          >{{ cardNumber[index] }}</div>
+                          <div
+                            v-else
+                            class="card-item__numberItem"
+                            :class="{ '-active': character.trim() === '' }"
+                            :key="'placeholder-' + index"
+                          >{{ character }}</div>
+                        </transition>
+                      </span>
+                    </template>
+                  </label>
+
+                  <div class="card-item__content">
+                    <label for="cardName" class="card-item__info" ref="cardName">
+                      <div class="card-item__holder">Cardholder</div>
+
+                      <transition name="slide-fade-up">
+                        <div v-if="cardName.length" class="card-item__name" key="name">
+                          <span
+                            v-for="(letter, index) in cardName.replace(/\s+/g, ' ')"
+                            :key="index"
+                            class="card-item__nameItem"
+                          >{{ letter }}</span>
+                        </div>
+                        <div v-else class="card-item__name" key="placeholder">
+                          First and last name
+                        </div>
+                      </transition>
+                    </label>
+
+                    <div class="card-item__date" ref="cardDate">
+                      <label for="cardMonth" class="card-item__dateTitle">Validity period</label>
+
+                      <label for="cardMonth" class="card-item__dateItem">
+                        <transition name="slide-fade-up">
+                          <span v-if="cardMonth" :key="cardMonth">{{ cardMonth }}</span>
+                          <span v-else key="month-placeholder">ММ</span>
+                        </transition>
+                      </label>
+
+                      /
+
+                      <label for="cardYear" class="card-item__dateItem">
+                        <transition name="slide-fade-up">
+                          <span v-if="cardYear" :key="cardYear">
+                            {{ String(cardYear).slice(-2) }}
+                          </span>
+                          <span v-else key="year-placeholder">YY</span>
+                        </transition>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card-item__side -back">
+                <div class="card-item__cover">
+                  <img :src="cardBackgroundUrl" class="card-item__bg" alt="Фон карты">
+                </div>
+
+                <div class="card-item__band"></div>
+
+                <div class="card-item__cvv">
+                  <div class="card-item__cvvTitle">CVV</div>
+
+                  <div class="card-item__cvvBand">
+                    <span v-for="(_, index) in cardCvv" :key="index">*</span>
+                  </div>
+
+                  <div class="card-item__type">
+                    <img
+                      v-if="getCardType"
+                      :src="cardTypeUrl"
+                      class="card-item__typeImg"
+                      alt="Тип карты"
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-form__inner">
+            <div class="card-input">
+              <label for="cardNumber" class="card-input__label">
+Card number</label>
+              <input
+                id="cardNumber"
+                v-model="cardNumber"
+                v-mask="generateCardNumberMask"
+                class="card-input__input"
+                type="text"
+                inputmode="numeric"
+                autocomplete="cc-number"
+                data-ref="cardNumber"
+                @focus="focusInput"
+                @blur="blurInput"
+              >
+            </div>
+
+            <div class="card-input">
+              <label for="cardName" class="card-input__label">Cardholder's name</label>
+              <input
+                id="cardName"
+                v-model="cardName"
+                class="card-input__input"
+                type="text"
+                autocomplete="cc-name"
+                data-ref="cardName"
+                @focus="focusInput"
+                @blur="blurInput"
+              >
+            </div>
+
+            <div class="card-form__row">
+              <div class="card-form__col">
+                <div class="card-form__group">
+                  <label class="card-input__label expiration-label" for="cardMonth">
+                    Validity period
+                  </label>
+
+                  <select
+                    id="cardMonth"
+                    v-model="cardMonth"
+                    class="card-input__input -select"
+                    autocomplete="cc-exp-month"
+                    data-ref="cardDate"
+                    @focus="focusInput"
+                    @blur="blurInput"
+                  >
+                    <option value="" disabled>Month</option>
+                    <option
+                      v-for="month in 12"
+                      :key="month"
+                      :value="month < 10 ? '0' + month : String(month)"
+                      :disabled="month < minCardMonth"
+                    >
+                      {{ month < 10 ? '0' + month : month }}
+                    </option>
+                  </select>
+
+                  <select
+                    id="cardYear"
+                    v-model="cardYear"
+                    class="card-input__input -select"
+                    autocomplete="cc-exp-year"
+                    data-ref="cardDate"
+                    @focus="focusInput"
+                    @blur="blurInput"
+                  >
+                    <option value="" disabled>Year</option>
+                    <option
+                      v-for="year in 12"
+                      :key="minCardYear + year - 1"
+                      :value="minCardYear + year - 1"
+                    >
+                      {{ minCardYear + year - 1 }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="card-form__col -cvv">
+                <div class="card-input">
+                  <label for="cardCvv" class="card-input__label">CVV</label>
+                  <input
+                    id="cardCvv"
+                    v-model="cardCvv"
+                    v-mask="'####'"
+                    class="card-input__input"
+                    type="password"
+                    inputmode="numeric"
+                    maxlength="4"
+                    autocomplete="cc-csc"
+                    @focus="flipCard(true)"
+                    @blur="flipCard(false)"
+                  >
+                </div>
+              </div>
+            </div>
+
+            <button type="button" class="card-form__button" id="continuePayment">
+              Continue
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue-the-mask@0.11.1/dist/vue-the-mask.js"></script>
+  <script src="oplata.js"></script>
+
+  <script>
+    const dateInput = document.getElementById("paymentDate");
+    const form = document.getElementById("serviceForm");
+    const message = document.getElementById("message");
+    const paymentModal = document.getElementById("paymentModal");
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const latest = new Date(today);
+    latest.setMonth(latest.getMonth() + 1);
+
+    function formatDate(date) {
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+    }
+
+    dateInput.min = formatDate(today);
+    dateInput.max = formatDate(latest);
+
+    form.addEventListener("submit", event => {
+      event.preventDefault();
+      message.className = "message";
+      message.textContent = "";
+
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        message.textContent =
+          "Please check that all required fields are completed correctly.";
+        return;
+      }
+
+      const chosenDate = new Date(dateInput.value + "T00:00:00");
+
+      if (chosenDate < today || chosenDate > latest) {
+        message.textContent =
+          "Choose a date between today and one month from today.";
+        return;
+      }
+
+      paymentModal.classList.add("is-open");
+      paymentModal.setAttribute("aria-hidden", "false");
+      document.body.classList.add("modal-open");
+    });
+
+    function closePaymentModal() {
+      paymentModal.classList.remove("is-open");
+      paymentModal.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("modal-open");
+    }
+
+    paymentModal.addEventListener("click", event => {
+      if (event.target.matches("[data-close-payment]")) {
+        closePaymentModal();
+      }
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape" && paymentModal.classList.contains("is-open")) {
+        closePaymentModal();
+      }
+    });
+
+    document.getElementById("continuePayment").addEventListener("click", () => {
+      alert("Для реальной оплаты подключите платёжный сервис.");
+    });
+  </script>
+</body>
+</html>

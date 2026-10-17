@@ -1,0 +1,61 @@
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.container{
+    width: 1140px;
+    margin: 0 auto;
+}
+.form_decor{
+    display: flex;
+    flex-direction: column;
+}
+.meet_text{
+    height: 20pt;
+    width: 240pt;
+    font-size: 18px;
+    color: #172B4C;
+}
+.label_text{
+    font-size: 11px;
+    color: #172B4C;
+    padding: 10px 0 10px 0;
+}
+.input_decor{
+    width: 290pt;
+    height: 40pt;
+    border-radius: 5px;
+    border: 2px solid #4C9AFF;
+}
+.input_textarea{
+    width: 300pt;
+    height: 110pt;
+    border-radius: 5px;
+    border: 2px solid #4C9AFF;
+}
+.btn_dec_send{
+    color: #fff;
+    width: 100pt;
+    height: 33pt;
+    border-radius: 5px;
+    background-color: #6C8EBF;
+    border: 2px solid #7EA6E0;
+    
+}
+.btn_dec_close{
+    color: #fff;
+    width: 100pt;
+    height: 33pt;
+    border-radius: 5px;
+    background-color: #666666;
+    border: 2px solid #B3B3B3;
+}
+.text_small_checkbtn{
+    color: #596780;
+    font-size: 11px;
+}
+.red_star{
+    color: red;
+}
