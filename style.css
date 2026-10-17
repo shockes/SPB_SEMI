@@ -786,6 +786,8 @@ body {
     max-width: 1200px;    
     margin-left: auto;
     margin-right: auto;
+    position: relative;
+    z-index: 10;
 }
 
 .new-generation .illustration-text {
@@ -819,7 +821,7 @@ body {
     height: auto;
 }
 
-.image-wrapper::after {
+/* .image-wrapper::after {
     content: '';
     position: absolute;
     top: 0;
@@ -830,9 +832,149 @@ body {
     transform: skewX(-20deg);
     animation: shinePass 8s ease-in-out infinite;
     pointer-events: none;
-}
+*/
 
 @keyframes shinePass {
     0%, 100% { left: -100%; }
     40%, 60% { left: 150%; }
+}
+
+
+
+.container2 {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 60px; /* Расстояние между двумя большими группами */
+    justify-content: center;
+    padding: 40px;
+}
+
+.group {
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+
+/* --- Система сетки шестиугольников --- */
+.hex-grid {
+    display: flex;
+    flex-wrap: wrap;
+    width: 600px; /* Ширина под размер шестиугольников */
+    justify-content: center;
+    filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));
+}
+
+/* --- Стилизация отдельного шестиугольника --- */
+.hex {
+    width: 180px;
+    height: 208px; /* Высота = ширина * 1.1547 для правильного шестиугольника */
+    margin: 4px;
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 10px;
+    box-sizing: border-box;
+    position: relative;
+    transition: all 0.3s ease;
+    opacity: 0;
+    transform: scale(0.8);
+    animation: popIn 0.6s forwards;
+    cursor: pointer;
+}
+
+/* Эффект при наведении */
+.hex:hover {
+    transform: scale(1.05);
+    z-index: 10;
+    filter: brightness(1.2);
+}
+
+/* --- Типографика --- */
+.hex h2 {
+    font-size: 24px;
+    margin: 0 0 5px 0;
+    font-weight: 800;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+.hex p {
+    font-size: 11px;
+    line-height: 1.2;
+    margin: 0;
+    font-weight: 500;
+    padding: 0 15px;
+}
+
+/* --- Конкретные цвета (в соответствии со скриншотом) --- */
+        
+/* Цвета левой группы */
+.c-brown { background-color: #8B5E1E; }
+.c-dark-blue { background-color: #2F4068; }
+.c-purple { background-color: #7D4864; }
+.c-teal { background-color: #2F6F6F; }
+.c-red { background-color: #9E5252; }
+.c-blue { background-color: #597E9E; }
+.c-gray { background-color: #444; border: 2px solid #666; }
+
+/* Цвета правой группы */
+.c-dark-gold { background-color: #7A5720; }
+.c-navy { background-color: #293A60; }
+.c-magenta { background-color: #7A4860; }
+.c-dark-teal { background-color: #2A6666; }
+.c-rust { background-color: #8F4C4C; }
+.c-light-blue { background-color: #6389AA; }
+.c-black { background-color: #222; border: 2px solid #555; }
+
+/* --- Вспомогательные классы для позиционирования (логика рядов) --- */
+/* Чтобы создать паттерн сот, мы используем ряды с отрицательными отступами */
+        
+.row {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: -50px; /* Перекрытие рядов */
+}
+
+.row:nth-child(odd) {
+    margin-left: -90px; /* Смещение нечетных рядов */
+}
+
+/* --- Анимации --- */
+@keyframes popIn {
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Задержка анимации для эффекта каскада */
+.hex:nth-child(1) { animation-delay: 0.1s; }
+.hex:nth-child(2) { animation-delay: 0.2s; }
+.hex:nth-child(3) { animation-delay: 0.3s; }
+.hex:nth-child(4) { animation-delay: 0.4s; }
+.hex:nth-child(5) { animation-delay: 0.5s; }
+.hex:nth-child(6) { animation-delay: 0.6s; }
+.hex:nth-child(7) { animation-delay: 0.7s; }
+
+/* --- Адаптивный дизайн --- */
+@media (max-width: 1300px) {
+    .container {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+@media (max-width: 700px) {
+    .hex-grid {
+        transform: scale(0.6);
+        height: 400px; /* Компенсация масштабирования */
+        width: 100%;
+        margin: -100px 0;
+    }
+    .container {
+        gap: 0;
+    }
 }
